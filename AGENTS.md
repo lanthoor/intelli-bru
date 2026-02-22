@@ -11,6 +11,79 @@ This document provides essential information for AI agents working on the intell
 - **Target IDE:** IntelliJ IDEA 2025.2.4+ (since build 252.25557)
 - **Group ID:** `in.co.spendly`
 
+## Development Workflow
+
+Follow this iterative workflow for each phase/sub-phase. **Each phase or sub-phase = one commit.**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    ITERATIVE WORKFLOW                       │
+│                                                             │
+│   ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐   │
+│   │Implement│──►│  Test   │──►│ Verify  │──►│ Commit  │   │
+│   └─────────┘   └─────────┘   └─────────┘   └─────────┘   │
+│        │                            │             │        │
+│        │                            │             ▼        │
+│        │                            │      Next Phase      │
+│        ▼                            ▼                      │
+│   If tests fail ◄──────────── Fix issues                   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Step 1: Implement Feature/Fix
+- Write production code for the phase/sub-phase
+- Follow code style guidelines below
+- Update `plugin.xml` if adding extensions/actions
+
+### Step 2: Add/Update Tests
+- Add unit tests for new functionality
+- Update existing tests if behavior changed
+- Place tests in `src/test/kotlin/` mirroring main structure
+
+### Step 3: Verify All Checks Pass
+```bash
+./gradlew check                    # Run all verification (includes test)
+./gradlew verifyPlugin             # Verify plugin compatibility
+```
+**Do NOT proceed to commit if any check fails.**
+
+### Step 4: Commit
+```bash
+git add -A
+git commit -m "type(scope): description"
+```
+
+**Conventional Commit Format:** `type(scope): description`
+
+| Type | Use When |
+|------|----------|
+| `feat` | Adding new functionality |
+| `fix` | Fixing a bug |
+| `refactor` | Code changes that neither fix bugs nor add features |
+| `test` | Adding or updating tests |
+| `docs` | Documentation changes |
+| `chore` | Build, config, or tooling changes |
+| `style` | Code style/formatting (no logic change) |
+
+**Scope:** Use phase number or component name
+- `feat(phase-1.1): add Grammar-Kit plugin configuration`
+- `feat(bru-lexer): implement JFlex lexer specification`
+- `fix(cli): handle timeout on slow requests`
+- `test(parser): add tests for multiline values`
+- `docs(readme): add installation instructions`
+- `chore(build): update Kotlin to 2.1.20`
+
+### Step 5: Move to Next Phase
+Only after successful commit, proceed to the next phase/sub-phase.
+
+### Pre-Commit Checklist
+- [ ] Feature/fix implemented completely
+- [ ] Tests added or updated
+- [ ] `./gradlew check` passes
+- [ ] `./gradlew verifyPlugin` passes
+- [ ] Code follows style guidelines
+- [ ] No TODO comments left unresolved (for this phase)
+
 ## Build & Test Commands
 
 ```bash
@@ -26,9 +99,12 @@ This document provides essential information for AI agents working on the intell
 ./gradlew test --tests "ClassName.methodName"     # Single method
 ./gradlew test --tests "*Pattern*"                # Pattern match
 
-# Run & Verify
+# Verify
+./gradlew check                    # All checks (test + verification)
+./gradlew verifyPlugin             # Plugin compatibility check
+
+# Run
 ./gradlew runIde                   # Launch IDE with plugin
-./gradlew verifyPlugin             # Verify compatibility
 ```
 
 ## Project Structure
@@ -146,8 +222,9 @@ class MyTest : BasePlatformTestCase() {
 
 ## Quick Reference
 
-| Task | Location |
-|------|----------|
+| Task | Command/Location |
+|------|------------------|
+| Run all checks | `./gradlew check` |
 | Run plugin | `./gradlew runIde` |
 | Add extension | `plugin.xml` → `<extensions>` |
 | Add i18n string | `MyMessageBundle.properties` |
